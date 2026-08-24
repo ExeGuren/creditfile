@@ -4,36 +4,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CreditFile Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
 
+  <!-- ── Header ── -->
   <header>
     <div class="header-inner">
-      <span class="logo">&#9632; CreditFile</span>
-      <span class="tagline">Motorcycle Loan Credit Scoring</span>
+      <div class="logo-group">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-name">CreditFile</div>
+          <div class="logo-sub">Motorcycle Loan Analyzer</div>
+        </div>
+      </div>
+      <div class="header-badge">Internal Tool</div>
     </div>
   </header>
 
   <main>
 
-    <!-- ── STEP 1 : Upload ── -->
+    <!-- ── Hero ── -->
+    <div class="hero">
+      <h1>Credit Score Analysis</h1>
+      <p>Upload Excel credit investigation files to instantly score and validate loan applications.</p>
+    </div>
+
+    <!-- ── Upload Card ── -->
     <section class="card" id="upload-section">
-      <h2>Upload Credit Files</h2>
-      <p class="hint">Add one or more Excel credit investigation files (<code>.xlsx</code>). Then click <strong>Analyze All</strong>.</p>
 
       <div class="drop-zone" id="drop-zone" tabindex="0" role="button"
            aria-label="Drop zone — click or drag Excel files here">
-        <div class="drop-icon">&#8679;</div>
-        <p>Drag &amp; drop <strong>.xlsx</strong> files here</p>
-        <p class="or">— or —</p>
-        <label class="btn btn-outline" for="file-input">Browse files</label>
+        <div class="dz-content">
+          <div class="dz-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <p class="dz-title">Drop your files here</p>
+          <p class="dz-sub">Supports <strong>.xlsx</strong> and <strong>.xls</strong> formats</p>
+          <label class="btn btn-outline" for="file-input">Browse files</label>
+        </div>
       </div>
       <input type="file" id="file-input" accept=".xlsx,.xls" multiple style="display:none" />
 
+      <!-- File queue -->
       <div id="file-queue" style="display:none">
         <div class="queue-header">
-          <span id="queue-count"></span>
+          <span class="queue-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span id="queue-count"></span>
+          </span>
           <button class="btn-link" id="clear-all-btn">Clear all</button>
         </div>
         <ul class="file-list" id="file-list"></ul>
@@ -42,37 +72,52 @@
       <p class="error" id="upload-error" style="display:none"></p>
 
       <div class="actions">
-        <button class="btn btn-primary" id="analyze-btn" disabled>Analyze All</button>
+        <button class="btn btn-primary" id="analyze-btn" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Analyze All
+        </button>
       </div>
 
+      <!-- Loading overlay -->
       <div class="loading" id="loading" style="display:none">
-        <div class="spinner"></div>
-        <p id="loading-text">Loading models&hellip;</p>
+        <div class="loading-inner">
+          <div class="spinner"></div>
+          <p id="loading-text">Loading models&hellip;</p>
+        </div>
       </div>
     </section>
 
-    <!-- ── STEP 2 : Results ── -->
-    <section class="card" id="results-section" style="display:none">
-      <div class="results-header">
-        <h2>Results <span class="results-count" id="results-count"></span></h2>
+    <!-- ── Results ── -->
+    <section id="results-section" style="display:none">
+      <div class="results-toolbar">
+        <div class="results-title">
+          <h2>Results</h2>
+          <span class="results-pill" id="results-count"></span>
+        </div>
         <div class="results-actions-top">
-          <button class="btn btn-outline" id="download-all-btn">&#8595; Download All JSON</button>
-          <button class="btn btn-ghost"   id="new-btn">&#8635; New batch</button>
+          <button class="btn btn-outline" id="download-all-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download All
+          </button>
+          <button class="btn btn-ghost" id="new-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.75"/></svg>
+            New Batch
+          </button>
         </div>
       </div>
       <div id="results-list"></div>
     </section>
+
   </main>
 
   <footer>
-    <p>CreditFile &mdash; Internal use only</p>
+    <div class="footer-inner">
+      <span>CreditFile &mdash; Internal use only</span>
+    </div>
   </footer>
 
-  <!-- CDN libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-  <!-- App scripts -->
   <script src="js/pipeline.js"></script>
   <script src="js/ui.js"></script>
 </body>

@@ -17,21 +17,21 @@ const CreditPipeline = (() => {
   let SCALER = null;   // { quantiles, references }
   let BOW    = null;   // { vocabulary, feature_names }
 
-  const BASE = (() => {
-    // Works for both GitHub Pages (/<repo>/js/pipeline.js) and local file://
-    const s = document.currentScript ? document.currentScript.src : '';
-    return s.replace(/\/js\/pipeline\.js.*$/, '');
-  })();
+  // Derive base URL from the page location, not the script tag
+  // Works for http://localhost:8080, GitHub Pages, any subdirectory
+  const BASE = window.location.href.replace(/\/[^/]*$/, '').replace(/\/$/, '');
 
   async function init() {
+    console.log('[CreditPipeline] Loading artifacts from:', BASE);
     const [model, scaler, bow] = await Promise.all([
-      fetch(`${BASE}/artifacts/model.json`).then(r => r.json()),
-      fetch(`${BASE}/artifacts/scaler.json`).then(r => r.json()),
-      fetch(`${BASE}/artifacts/bow.json`).then(r => r.json()),
+      fetch(`${BASE}/artifacts/model.json`).then(r => { if (!r.ok) throw new Error(`model.json ${r.status}`); return r.json(); }),
+      fetch(`${BASE}/artifacts/scaler.json`).then(r => { if (!r.ok) throw new Error(`scaler.json ${r.status}`); return r.json(); }),
+      fetch(`${BASE}/artifacts/bow.json`).then(r => { if (!r.ok) throw new Error(`bow.json ${r.status}`); return r.json(); }),
     ]);
     MODEL  = model;
     SCALER = scaler;
     BOW    = bow;
+    console.log('[CreditPipeline] Artifacts loaded. Trees:', MODEL.trees.length, 'BoW tokens:', BOW.feature_names.length);
   }
 
   // ── Utilities ────────────────────────────────────────────────────────────
@@ -795,11 +795,16 @@ const CreditPipeline = (() => {
 
   // ── Public analyzeFile ───────────────────────────────────────────────────
   async function analyzeFile(file) {
+    console.log('[CreditPipeline] Analyzing:', file.name);
     const arrayBuffer = await file.arrayBuffer();
     const sheet   = loadReportSheet(arrayBuffer);
+    console.log('[CreditPipeline] Sheet rows:', sheet.length);
     const parsed  = parseCreditReport(sheet, file.name);
+    console.log('[CreditPipeline] Parsed sections:', Object.keys(parsed));
     const normalized = normalizeCreditData(parsed);
+    console.log('[CreditPipeline] Normalized personal_data keys:', Object.keys(normalized.personal_data || {}));
     const features   = prepareFeatures(normalized);
+    console.log('[CreditPipeline] Features:', features);
 
     const MISSING_THRESHOLD = 5;
     const missingCount = features.filter(f => isna(f) || f === -1).length;
