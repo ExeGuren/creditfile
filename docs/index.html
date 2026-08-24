@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CreditFile Analyzer</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <span class="logo">&#9632; CreditFile</span>
+      <span class="tagline">Motorcycle Loan Credit Scoring</span>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── STEP 1 : Upload ── -->
+    <section class="card" id="upload-section">
+      <h2>Upload Credit Files</h2>
+      <p class="hint">Add one or more Excel credit investigation files (<code>.xlsx</code>). Then click <strong>Analyze All</strong>.</p>
+
+      <div class="drop-zone" id="drop-zone" tabindex="0" role="button"
+           aria-label="Drop zone — click or drag Excel files here">
+        <div class="drop-icon">&#8679;</div>
+        <p>Drag &amp; drop <strong>.xlsx</strong> files here</p>
+        <p class="or">— or —</p>
+        <label class="btn btn-outline" for="file-input">Browse files</label>
+      </div>
+      <input type="file" id="file-input" accept=".xlsx,.xls" multiple style="display:none" />
+
+      <div id="file-queue" style="display:none">
+        <div class="queue-header">
+          <span id="queue-count"></span>
+          <button class="btn-link" id="clear-all-btn">Clear all</button>
+        </div>
+        <ul class="file-list" id="file-list"></ul>
+      </div>
+
+      <p class="error" id="upload-error" style="display:none"></p>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="analyze-btn" disabled>Analyze All</button>
+      </div>
+
+      <div class="loading" id="loading" style="display:none">
+        <div class="spinner"></div>
+        <p id="loading-text">Loading models&hellip;</p>
+      </div>
+    </section>
+
+    <!-- ── STEP 2 : Results ── -->
+    <section class="card" id="results-section" style="display:none">
+      <div class="results-header">
+        <h2>Results <span class="results-count" id="results-count"></span></h2>
+        <div class="results-actions-top">
+          <button class="btn btn-outline" id="download-all-btn">&#8595; Download All JSON</button>
+          <button class="btn btn-ghost"   id="new-btn">&#8635; New batch</button>
+        </div>
+      </div>
+      <div id="results-list"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>CreditFile &mdash; Internal use only</p>
+  </footer>
+
+  <!-- CDN libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <!-- App scripts -->
+  <script src="js/pipeline.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
