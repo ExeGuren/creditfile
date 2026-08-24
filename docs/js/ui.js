@@ -70,6 +70,25 @@
     return String(val);
   }
 
+  // ── Theme toggle ──────────────────────────────────────────
+  const themeToggle = document.getElementById('theme-toggle');
+  const iconMoon    = themeToggle.querySelector('.icon-moon');
+  const iconSun     = themeToggle.querySelector('.icon-sun');
+
+  // Persist preference
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+    iconMoon.style.display = 'none';
+    iconSun.style.display  = '';
+  }
+
+  themeToggle.addEventListener('click', function () {
+    const isLight = document.body.classList.toggle('light');
+    iconMoon.style.display = isLight ? 'none' : '';
+    iconSun.style.display  = isLight ? '' : 'none';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  });
+
   // ── Load ML models ────────────────────────────────────────
   setLoading(true);
   loadingText.textContent = 'Loading models\u2026';

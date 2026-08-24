@@ -1,7 +1,7 @@
 /* ── Reset ───────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── Tokens ──────────────────────────────────────────────── */
+/* ── Tokens — dark (default) ─────────────────────────────── */
 :root {
   --brand:       #6366f1;
   --brand-dk:    #4f46e5;
@@ -31,6 +31,23 @@
   --shadow-lg:   0 8px 40px rgba(0,0,0,.6);
 }
 
+/* ── Tokens — light ──────────────────────────────────────── */
+body.light {
+  --bg:          #f0f4f8;
+  --bg-card:     #ffffff;
+  --bg-card2:    #f8fafc;
+  --border:      rgba(0,0,0,.08);
+  --border-md:   rgba(0,0,0,.14);
+
+  --text:        #0f172a;
+  --text-muted:  #64748b;
+  --text-dim:    #94a3b8;
+
+  --shadow-sm:   0 1px 3px rgba(0,0,0,.08);
+  --shadow:      0 4px 24px rgba(0,0,0,.1);
+  --shadow-lg:   0 8px 40px rgba(0,0,0,.14);
+}
+
 /* ── Base ────────────────────────────────────────────────── */
 html { scroll-behavior: smooth; }
 
@@ -42,6 +59,7 @@ body {
   display: flex;
   flex-direction: column;
   line-height: 1.6;
+  transition: background .3s, color .3s;
 }
 
 /* ── Header ──────────────────────────────────────────────── */
@@ -57,7 +75,9 @@ header {
   height: 60px;
   display: flex;
   align-items: center;
+  transition: background .3s;
 }
+body.light header { background: rgba(240,244,248,.9); }
 .header-inner {
   max-width: 860px;
   width: 100%;
@@ -87,6 +107,20 @@ header {
   color: #a5b4fc;
   letter-spacing: .04em; text-transform: uppercase;
 }
+
+/* ── Theme toggle ────────────────────────────────────────── */
+.theme-toggle {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid var(--border-md);
+  color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .15s, color .15s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { background: rgba(255,255,255,.14); color: var(--text); }
+body.light .theme-toggle { background: rgba(0,0,0,.05); }
+body.light .theme-toggle:hover { background: rgba(0,0,0,.1); }
 
 /* ── Main layout ─────────────────────────────────────────── */
 main {
