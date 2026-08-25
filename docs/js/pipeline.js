@@ -828,6 +828,10 @@ const CreditPipeline = (() => {
     const score        = scoreValid ? makeCreditScore(features) : null;
     const missingFields = validateFields(normalized);
 
+    console.log('[CreditPipeline] Missing feature count:', missingCount);
+    console.log('[CreditPipeline] Missing fields:', JSON.stringify(missingFields, null, 2));
+    console.log('[CreditPipeline] Score:', score, '| Valid:', scoreValid);
+
     return {
       filename:      file.name,
       credit_score:  score,
