@@ -416,7 +416,8 @@ const CreditPipeline = (() => {
       k = preCorrections[k] || k;
       k = standardizeField(k);
       k = postCorrections[k] || k;
-      if (canonicalFields.has(k) && notna(v)) normalized[k] = v;
+      // notna(v) AND not a null-string placeholder (pandas converts these to NaN)
+      if (canonicalFields.has(k) && notna(v) && !isNullString(v)) normalized[k] = v;
     }
 
     // dependent_ages from subtable
@@ -489,7 +490,7 @@ const CreditPipeline = (() => {
     const normalized = {};
     for (let [k, v] of Object.entries(flattenDict(data))) {
       k = standardizeField(k);
-      if (fieldCorrections[k] && notna(v)) normalized[fieldCorrections[k]] = v;
+      if (fieldCorrections[k] && notna(v) && !isNullString(v)) normalized[fieldCorrections[k]] = v;
     }
     return normalized;
   }
@@ -526,7 +527,7 @@ const CreditPipeline = (() => {
       if (incomeFields.has(std))       mapped = std;
       else if (incomeCorrections[std]) mapped = incomeCorrections[std];
       else                             mapped = extractLongestMatch(std, [...incomeFields], 3);
-      if (mapped && notna(v)) incomeItems[mapped] = v;
+      if (mapped && notna(v) && !isNullString(v)) incomeItems[mapped] = v;
     }
 
     const expenseFields = new Set([
@@ -542,7 +543,7 @@ const CreditPipeline = (() => {
       if (expenseFields.has(std))       mapped = std;
       else if (expenseCorrections[std]) mapped = expenseCorrections[std];
       else                              mapped = extractLongestMatch(std, [...expenseFields], 3);
-      if (mapped && notna(v)) expenseItems[mapped] = v;
+      if (mapped && notna(v) && !isNullString(v)) expenseItems[mapped] = v;
     }
 
     const summaryCorrections = {
@@ -555,7 +556,7 @@ const CreditPipeline = (() => {
     };
     const summary = {};
     for (const [k, v] of Object.entries(data.summary || {})) {
-      if (summaryCorrections[k] && notna(v)) summary[summaryCorrections[k]] = v;
+      if (summaryCorrections[k] && notna(v) && !isNullString(v)) summary[summaryCorrections[k]] = v;
     }
 
     return { income: incomeItems, expense: expenseItems, summary };
@@ -582,7 +583,7 @@ const CreditPipeline = (() => {
     const normalized = {};
     for (let [k, v] of Object.entries(data)) {
       k = fieldCorrections[k] || k;
-      if (canonicalFields.has(k) && notna(v)) normalized[k] = v;
+      if (canonicalFields.has(k) && notna(v) && !isNullString(v)) normalized[k] = v;
     }
     return normalized;
   }
@@ -889,10 +890,21 @@ const CreditPipeline = (() => {
     ],
   };
 
-  /** is_missing — null/NaN OR iterable where every element is null/NaN */
+  /** is_missing — null/NaN OR iterable where every element is null/NaN OR a null-string placeholder */
+  const NULL_STRINGS = new Set([
+    'na', 'n/a', 'n.a', 'n.a.', 'none', 'null', 'nil',
+    '-', '--', '---', 'no data', 'no info', 'unknown',
+    'not applicable', 'not available', 'not stated',
+  ]);
+
+  function isNullString(x) {
+    return typeof x === 'string' && NULL_STRINGS.has(x.trim().toLowerCase());
+  }
+
   function isMissing(x) {
     if (isna(x)) return true;
-    if (Array.isArray(x)) return x.every(el => isna(el));
+    if (isNullString(x)) return true;
+    if (Array.isArray(x)) return x.every(el => isna(el) || isNullString(el));
     return false;
   }
 
@@ -925,6 +937,9 @@ const CreditPipeline = (() => {
     console.log('[CreditPipeline] Parsed sections:', Object.keys(parsed));
     const normalized = normalizeCreditData(parsed);
     console.log('[CreditPipeline] personal_data keys:', Object.keys(normalized.personal_data || {}));
+    console.log('[CreditPipeline] parents_address value:', JSON.stringify((normalized.personal_data || {}).parents_address));
+    console.log('[CreditPipeline] parents_name value:', JSON.stringify((normalized.personal_data || {}).parents_name));
+    console.log('[CreditPipeline] dependent_ages value:', JSON.stringify((normalized.personal_data || {}).dependent_ages));
     const features   = prepareFeatures(normalized);
 
     const missingCount = features.filter(f => isna(f) || f === -1).length;
@@ -934,6 +949,9 @@ const CreditPipeline = (() => {
 
     console.log('[CreditPipeline] missing features:', missingCount, '| score:', score, '| valid:', scoreValid);
     console.log('[CreditPipeline] missing fields:', JSON.stringify(missingFields, null, 2));
+    console.log('[CreditPipeline] isMissing(undefined):', isMissing(undefined));
+    console.log('[CreditPipeline] isMissing(null):', isMissing(null));
+    console.log('[CreditPipeline] personal_data subset parents_address:', (normalized.personal_data || {}).parents_address);
 
     return {
       filename:       file.name,
