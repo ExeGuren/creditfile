@@ -143,6 +143,11 @@ main {
   background-clip: text;
   line-height: 1.2; margin-bottom: 10px;
 }
+body.light .hero h1 {
+  background: linear-gradient(135deg, #1e293b 30%, #4f46e5);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 .hero p { font-size: .95rem; color: var(--text-muted); max-width: 460px; margin: 0 auto; }
 
 /* ── Card ────────────────────────────────────────────────── */
@@ -402,6 +407,7 @@ main {
 .score-ring { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
 .score-ring svg { width: 96px; height: 96px; transform: rotate(-90deg); }
 .ring-bg   { fill: none; stroke: rgba(255,255,255,.06); stroke-width: 8; }
+body.light .ring-bg { stroke: rgba(0,0,0,.08); }
 .ring-prog { fill: none; stroke: var(--brand); stroke-width: 8;
              stroke-linecap: round;
              transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1), stroke .4s; }
@@ -489,7 +495,16 @@ main {
 .td-val  { color: var(--text); word-break: break-word; }
 .td-null { color: var(--text-dim); font-style: italic; }
 
-/* ── Error card state ────────────────────────────────────── */
+/* ── Light mode overrides for result cards ───────────────── */
+body.light .result-card { background: #fff; }
+body.light .result-card-header:hover { background: rgba(0,0,0,.03); }
+body.light .result-card-body { border-top-color: var(--border); }
+body.light .score-box { background: #f8fafc; }
+body.light .tree-section-header { background: #f1f5f9; color: var(--text-muted); }
+body.light .tree-section-header:hover { background: #e2e8f0; color: var(--text); }
+body.light .tree-table td { border-top-color: #e2e8f0; }
+body.light .td-key { color: #64748b; }
+body.light .td-val { color: var(--text); }
 .result-error {
   padding: 14px 20px;
   background: rgba(239,68,68,.08);
