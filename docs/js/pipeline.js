@@ -37,9 +37,22 @@ const CreditPipeline = (() => {
   // ── Utilities ────────────────────────────────────────────────────────────
   const NaN_ = NaN;
 
+  // Values that mean "no data" — treated as null throughout the pipeline
+  const NULL_STRINGS = new Set([
+    'na', 'n/a', 'n.a', 'n.a.', 'none', 'null', 'nil',
+    '-', '--', '---', 'n', 'no data', 'no info', 'unknown',
+    'not applicable', 'not available', 'not stated', 'n.a', 'na.',
+  ]);
+
+  function isNullString(x) {
+    if (typeof x !== 'string') return false;
+    return NULL_STRINGS.has(x.trim().toLowerCase());
+  }
+
   function isna(x) {
     if (x === null || x === undefined) return true;
     if (typeof x === 'number' && isNaN(x)) return true;
+    if (isNullString(x)) return true;
     return false;
   }
   function notna(x) { return !isna(x); }
@@ -82,7 +95,10 @@ const CreditPipeline = (() => {
       row.map(cell => {
         if (cell === null || cell === undefined) return null;
         let s = String(cell).replace(/:/g, '').trim();
-        return s === '' ? null : s;
+        if (s === '') return null;
+        // Treat placeholder values as null
+        if (NULL_STRINGS.has(s.toLowerCase())) return null;
+        return s;
       })
     );
   }
