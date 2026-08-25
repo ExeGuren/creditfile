@@ -704,9 +704,11 @@ const CreditPipeline = (() => {
 
   /** correct_dependent_counts */
   function correctDependentCounts(features) {
-    const dependentAges = cleanDependentAges(features.dependent_ages);
+    // Treat missing dependent_ages as empty list [] — same as Python
+    const rawAges = isna(features.dependent_ages) ? [] : features.dependent_ages;
+    const dependentAges = cleanDependentAges(rawAges);
     const ageCount = (notna(dependentAges) && Array.isArray(dependentAges)) ? dependentAges.length : NULL_VALUE;
-    const counts = [ageCount, forceNumeric(features.n_dependents)].filter(notna);
+    const counts = [ageCount, forceNumeric(features.n_dependents)].filter(v => notna(v) && !isNaN(v));
     const nDependents = counts.length ? Math.max(...counts) : NULL_VALUE;
 
     const agesForCorr = (notna(dependentAges) && Array.isArray(dependentAges))
@@ -943,6 +945,7 @@ const CreditPipeline = (() => {
     const features   = prepareFeatures(normalized);
 
     const missingCount = features.filter(f => isna(f) || f === -1).length;
+    console.log('[CreditPipeline] All features:', MODEL_FEATURES.map((k,i) => k + '=' + features[i]));
     const scoreValid   = missingCount < MISSING_THRESHOLD;
     const score        = makeCreditScore(features);
     const missingFields = validateFields(normalized);
