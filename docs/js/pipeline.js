@@ -883,7 +883,7 @@ const CreditPipeline = (() => {
       'name','present_address','present_address_tenure','contact_no','birthplace',
       'education','parents_name','parents_address','date_applied','unit_applied',
       'loan_amount','loan_terms','housing_status','dob','age','marital_status',
-      'n_children','n_dependents','dependent_ages',
+      'n_children','n_dependents',
     ],
     income_analysis: { summary: ['gross_income','monthly_amortization'] },
     officer_assessment: [
